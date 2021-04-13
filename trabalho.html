@@ -15,26 +15,40 @@
 <body>
     <div class="container">
         <div class="pagina-opcoes">
-            <h1>Bem Vindo ao QUIZ</h1>
-            <div id="inicial">
+            
+            <div class="inicial">
+                <h1>Bem Vindo ao QUIZ</h1>
                 <h2>Escolha a Dificuldade</h2>
             <div class="dificuldade-perguntas">
-                <div><button class="botao-facil">Fácil</button></div>
-                <div><button class="botao-medio">Médio</button></div>
-                <div><button class="botao-dificil">Difícil</button></div> 
+                <div >
+                    <select name="diculdade" id="dificuldade-pergunta">
+                      <option value="" selected>Selecione dificuldade</option>
+                      <option value="easy">Fácil</option>
+                      <option value="medium">Médio</option>
+                      <option value="hard">Dificil</option>
+                    </select>
+                </div>
                 <div>
                     <select name="categoria" id="categoria-pergunta">
-                      <option value="" selected>Selecione categoria</option>
-                      <option value="facil">Fácil</option>
-                      <option value="medio">Médio</option>
-                      <option value="dificil">Dificil</option>
+                           
                     </select>
+                </div>
+                <div class="div-botao">
+                    <button class="botao-jogar">Jogar</button>
                 </div>
             </div>
         </div>
 
     </div>    
-        
+    <div class="jogo">
+        <div class="inicial">
+            <h2>Comece a responder as perguntas</h2>
+            <div class="Perguntas">
+               <div class="pergunta"> hehehhe</div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> 
     <script src="trabalho.js"></script>
 </body>
 </html>

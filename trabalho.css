@@ -8,9 +8,19 @@ body {
     font-family: "Rye", cursive;
     color: #33313b;
     text-shadow: 2px 2px 8px #f6f5f5;
+    
+}
+.container {
+    width: 100vw;
+    height: 100vh;
+    background: #8b0b41;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center
 }
 
-#inicial {
+.inicial {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -18,14 +28,18 @@ body {
     margin: 20px;
     border-radius: 10px;
     padding: 10px;
+    justify-content: center;
+    align-items: center
   }
 
 h1 {
+    color: #ffffff;
     text-align: center;
     font-size: 90px;
     padding: 30px;
 }
 h2 {
+    color: #ffffff;
     text-align: center;
     font-size: 50px;
     padding: 20px;
@@ -49,11 +63,29 @@ button{
     padding: 30px;
     align-items: center;
     flex-direction: column;
-    margin-inline-start: 500px;
     margin-bottom: 20px;
     font-size: 30px;
     flex-direction: column;
     justify-content: center;
 }
 
-  
+.dificuldade-perguntas select{
+    background-color: #dd6b71;
+    color: #ffffff;
+    font-family: "Times New Roman", cursive;
+    border-radius: 10px;
+    padding: 30px;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 20px;
+    margin-inline-start: 100px;
+    font-size: 30px;
+    justify-content: center; 
+    align-items: center;
+}  
+
+.div-botao{
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+}
