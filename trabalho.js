@@ -2,6 +2,8 @@ const urlBase = 'https://opentdb.com';
 const proxy = 'https://cors-anywhere.herokuapp.com/';
 let categorias; 
 let perguntas; 
+let id;
+let possibilidades;
 let vetor = [];
 const elementos = {
     categoriaSelect: document.querySelector('#categoria-pergunta'), 
@@ -12,10 +14,11 @@ const elementos = {
     category: document.querySelector('#categoria-pergunta'),
     divPergunta: document.querySelector('.pergunta'),
     divRespostas: document.querySelector('.radio-respostas'),
-    proximaPergunta: document.querySelector('.next-pergunta'),
     guardaPergunta: document.querySelector('.save-pergunta'),
-    respondePergunta: document.querySelector('.return-pergunta'),
+    retornaPergunta: document.querySelector('.return-pergunta'),
     submetePergunta: document.querySelector('.check-pergunta'),
+    proximaPergunta: document.querySelector('.next-pergunta'),
+    divPontuacao: document.querySelector('.pontuacao'),
 };
 
 const pegarCategorias = () => {
@@ -38,8 +41,8 @@ const pegarCategorias = () => {
 //https://opentdb.com/api.php?amount=10&category=19&difficulty=easy
 //https://opentdb.com/api.php?amount=1&category=21&difficulty=hard
 
-const pegarPerguntas = (dificul, categor) => {
-    axios.get(`${urlBase}/api.php?amount=10&category=${categor.id}&difficulty=${dificul}`)
+const pegarPerguntas = () => {
+    axios.get(`${urlBase}/api.php?amount=10&category=${jogo.categoria.id}&difficulty=${jogo.dificuldade}`)
       .then(response => {
           
           const auxP = response.data.results;
@@ -47,10 +50,43 @@ const pegarPerguntas = (dificul, categor) => {
           perguntas = JSON.parse(aux1P);
           console.log(perguntas);
           colocarPerguntaAleatoria();
-          elementos.proximaPergunta.addEventListener('click', () => colocarPerguntaAleatoria());
+          elementos.submetePergunta.addEventListener('click', () => respondePergunta());
           elementos.guardaPergunta.addEventListener('click', () => guardarPergunta());
 
     });
+}
+
+const respondePergunta = () =>{
+  const  radiobutton = document.querySelector('input[name="respostas"]:checked').value;
+  
+    elementos.divRespostas.innerHTML = '';
+    for (let j = 0; j < possibilidades.length; j++) {
+      if(possibilidades[j]==perguntas[id].correct_answer && perguntas[id].correct_answer == radiobutton){
+        elementos.divRespostas.innerHTML += `<div class="p-3 mb-2 bg-success text-white"><input  type="radio" name="respostas"  value="${possibilidades[j]}" checked/>${possibilidades[j]}<br/></div>`
+      }else if(possibilidades[j]==perguntas[id].correct_answer  && perguntas[id].correct_answer != radiobutton ){
+        elementos.divRespostas.innerHTML += `<div class="p-3 mb-2 bg-success text-white"><input  type="radio" name="respostas"  value="${possibilidades[j]}"/>${possibilidades[j]}<br/></div>`
+      }else if(possibilidades[j]!=perguntas[id].correct_answer  && possibilidades[j] == radiobutton ){
+        elementos.divRespostas.innerHTML += `<div class="p-3 mb-2 bg-danger text-white"><input  type="radio" name="respostas"  value="${possibilidades[j]}" checked/>${possibilidades[j]}<br/></div>`
+      }else{
+        elementos.divRespostas.innerHTML += `<div class="p-3 mb-2 bg-danger text-white"><input type="radio" name="respostas"  value="${possibilidades[j]}"/>${possibilidades[j]}<br/></div>`
+      }
+      
+    }
+
+    console.log(jogo.pontuacao);
+    elementos.submetePergunta.style.display = 'none';
+    elementos.proximaPergunta.style.display = 'flex';
+
+    const pontos = calculaPontuacao(radiobutton);
+
+    
+    console.log(jogo.pontuacao);
+    elementos.divPontuacao.innerHTML = `<div class="p-3 mb-2 bg-light text-dark"><strong>Pontuação computada:${pontos} Pontuação total: ${jogo.pontuacao}<strong></div>`
+
+
+
+    elementos.proximaPergunta.addEventListener('click', () => colocarPerguntaAleatoria());
+  
 }
 
 
@@ -71,8 +107,13 @@ const pegarPerguntas = (dificul, categor) => {
             respostasIncorretas : [],
         }, 
         dificuldade: undefined, 
+        categoria: {
+          id: undefined,
+          name: undefined,
+        },
         acertos:undefined, 
         erros:undefined,
+        pontuacao:0,
 
     }
 
@@ -114,13 +155,51 @@ const pegarPerguntas = (dificul, categor) => {
         }
     }
     
-    pegarPerguntas(dificul, categor);
+    jogo.dificuldade = dificul;
+    jogo.categoria = categor;
+
+    pegarPerguntas();
     
   }
 
+  const calculaPontuacao = (radiobutton) => {
+    let valor;
+      if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'easy'){
+         jogo.pontuacao += 5;
+         valor = 5;
+         jogo.acertos++;
+      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'medium'){
+         jogo.pontuacao += 8;
+         valor = 8;
+         jogo.acertos++;
+      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'hard'){
+        jogo.pontuacao += 10;
+        valor = 10;
+        jogo.acertos++;
+      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'easy'){
+        jogo.pontuacao -= 5;
+        valor = -5;
+        jogo.erros++;
+      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'medium'){
+        jogo.pontuacao -= 8;
+        valor = -8;
+        jogo.erros++;
+      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'hard'){
+        jogo.pontuacao -= 10;
+        valor = -10;
+        jogo.erros++;
+      }
+
+
+    return valor;  
+  }
+
   const colocarPerguntaAleatoria = () => {
+    elementos.retornaPergunta.style.display = 'none';
+    elementos.proximaPergunta.style.display = 'none';
+    elementos.submetePergunta.style.display = 'flex';
     
-    
+
     let vddFal=false;
     const i = Math.floor(Math.random() * perguntas.length);
     const p = perguntas[i];     
@@ -135,20 +214,24 @@ const pegarPerguntas = (dificul, categor) => {
         colocarPerguntaAleatoria();
       }else if(vddFal == false){
           vetor.push(i);
+          id = i;
           elementos.divPergunta.innerHTML = `<div>${perguntas[i].question}</div>`
           elementos.divRespostas.innerHTML = ' ';
-          let possibilidades = perguntas[i].incorrect_answers;
+          possibilidades = perguntas[i].incorrect_answers;
           possibilidades.push(perguntas[i].correct_answer);
           possibilidades =  possibilidades.sort(() => Math.random() - 0.5)
           
           for (let j = 0; j < possibilidades.length; j++) {
-            elementos.divRespostas.innerHTML += `<div><input type="radio" name="respostas" value="${possibilidades[j]}"/>${possibilidades[j]}<br/></div>`
+            if(j==0){
+              elementos.divRespostas.innerHTML += `<div><input type="radio" name="respostas"  value="${possibilidades[j]}" checked/>${possibilidades[j]}<br/></div>`
+            }else{
+              elementos.divRespostas.innerHTML += `<div><input type="radio" name="respostas"  value="${possibilidades[j]}"/>${possibilidades[j]}<br/></div>`
+            }
+            
           }
 
-          elementos.proximaPergunta.addEventListener('click', () => colocarPerguntaAleatoria());
-          elementos.guardarPergunta.addEventListener('click', () => guardarPergunta()); 
-          elementos.respondePergunta.addEventListener('click', () => responderPerguntaGuardada());
-          elementos.submetePergunta.addEventListener('click', () => checarPergunta());         
+          //elementos.guardarPergunta.addEventListener('click', () => guardarPergunta());
+          //elementos.submetePergunta.addEventListener('click', () => checarPergunta());         
 
           
       }
