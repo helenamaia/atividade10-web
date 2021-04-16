@@ -9,6 +9,7 @@ const elementos = {
     categoriaSelect: document.querySelector('#categoria-pergunta'), 
     telaInicial: document.querySelector('.pagina-opcoes'),
     telaJogo: document.querySelector('.jogo'),
+    telaFinal: document.querySelector('.finalizacao'),
     jogar: document.querySelector('.botao-jogar'), 
     dificulty: document.querySelector('#dificuldade-pergunta'),
     category: document.querySelector('#categoria-pergunta'),
@@ -57,8 +58,9 @@ const pegarPerguntas = () => {
 }
 
 const respondePergunta = () =>{
+
   const  radiobutton = document.querySelector('input[name="respostas"]:checked').value;
-  
+    elementos.guardaPergunta.style.display = 'none';
     elementos.divRespostas.innerHTML = '';
     for (let j = 0; j < possibilidades.length; j++) {
       if(possibilidades[j]==perguntas[id].correct_answer && perguntas[id].correct_answer == radiobutton){
@@ -72,23 +74,35 @@ const respondePergunta = () =>{
       }
       
     }
+    
+    if(jogo.perguntaGuardada != undefined){
+      elementos.retornaPergunta.style.display = 'flex';
+      elementos.retornaPergunta.addEventListener('click', () => responderPerguntaGuardada());
+    }
 
-    console.log(jogo.pontuacao);
+    //console.log(jogo.pontuacao);
     elementos.submetePergunta.style.display = 'none';
     elementos.proximaPergunta.style.display = 'flex';
+    elementos.divPontuacao.style.display = 'flex';
 
     const pontos = calculaPontuacao(radiobutton);
 
     
-    console.log(jogo.pontuacao);
+    //console.log(jogo.pontuacao);
     elementos.divPontuacao.innerHTML = `<div class="p-3 mb-2 bg-light text-dark"><strong>Pontuação computada:${pontos} Pontuação total: ${jogo.pontuacao}<strong></div>`
-
-
+    
+    if(jogo.erros >= 3){
+      telaFinalizacao();
+    }
 
     elementos.proximaPergunta.addEventListener('click', () => colocarPerguntaAleatoria());
   
 }
 
+  const telaFinalizacao = () =>{
+    elementos.telaJogo.style.display = 'none';
+    elementos.telaFinal.style.display = 'flex';
+  }
 
   const colocarCategorias = (categoria) =>{
     elementos.categoriaSelect.innerHTML += `<option value="${categoria}" selected>${categoria}</option>`;
@@ -98,27 +112,22 @@ const respondePergunta = () =>{
     pegarCategorias();
 
     jogo = {
-        perguntaGuardada: {
-            categoria: undefined,
-            tipo: undefined,
-            dificuldade: undefined,
-            questao: undefined,
-            respostaCorreta: undefined,
-            respostasIncorretas : [],
-        }, 
+        perguntaGuardada: undefined, 
         dificuldade: undefined, 
         categoria: {
           id: undefined,
           name: undefined,
         },
-        acertos:undefined, 
-        erros:undefined,
+        questionGuard: undefined,
+        acertos:0, 
+        erros:0,
         pontuacao:0,
 
     }
 
     elementos.telaInicial.style.display = 'flex';
     elementos.telaJogo.style.display = 'none'; 
+    elementos.telaFinal.style.display = 'none';
 
     elementos.jogar.addEventListener('click', () => gerarListaPerguntas());
     
@@ -126,8 +135,10 @@ const respondePergunta = () =>{
   }
 
   const guardarPergunta = () => {
+    jogo.perguntaGuardada = perguntas[id];
+    console.log(jogo.perguntaGuardada);
 
-
+    elementos.guardaPergunta.style.display = 'none';
     colocarPerguntaAleatoria();
   }
 
@@ -164,28 +175,55 @@ const respondePergunta = () =>{
 
   const calculaPontuacao = (radiobutton) => {
     let valor;
-      if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'easy'){
-         jogo.pontuacao += 5;
+
+
+      if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard != perguntas[id].question){
+         jogo.pontuacao = jogo.pontuacao + 5;
          valor = 5;
          jogo.acertos++;
-      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'medium'){
-         jogo.pontuacao += 8;
+      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard != perguntas[id].question){
+         jogo.pontuacao = jogo.pontuacao + 8;
          valor = 8;
          jogo.acertos++;
-      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'hard'){
-        jogo.pontuacao += 10;
+      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'hard' && jogo.questionGuard != perguntas[id].question){
+        jogo.pontuacao = jogo.pontuacao + 10;
         valor = 10;
         jogo.acertos++;
-      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'easy'){
-        jogo.pontuacao -= 5;
+      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard != perguntas[id].question){
+        jogo.pontuacao = jogo.pontuacao - 5;
         valor = -5;
         jogo.erros++;
-      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'medium'){
-        jogo.pontuacao -= 8;
+      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard != perguntas[id].question){
+        jogo.pontuacao = jogo.pontuacao - 8;
         valor = -8;
         jogo.erros++;
-      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'hard'){
-        jogo.pontuacao -= 10;
+      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'hard' && jogo.questionGuard != perguntas[id].question){
+        jogo.pontuacao = jogo.pontuacao - 10;
+        valor = -10;
+        jogo.erros++;
+        console.log(`erros: ${jogo.erros}`);
+      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard == perguntas[id].question){
+        jogo.pontuacao = jogo.pontuacao + 3;
+        valor = +3;
+        jogo.acertos++;
+      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard == perguntas[id].question){
+        jogo.pontuacao = jogo.pontuacao + 6;
+        valor = +6;
+        jogo.acertos++;
+      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'hard' && jogo.questionGuard == perguntas[id].question){
+        jogo.pontuacao = jogo.pontuacao + 8;
+        valor = +8;
+        jogo.acertos++;
+      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard == perguntas[id].question){
+        jogo.pontuacao = jogo.pontuacao - 5;
+        valor = -5;
+        jogo.erros++;
+      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard == perguntas[id].question){
+        jogo.pontuacao = jogo.pontuacao - 8;
+        valor = -8;
+        jogo.erros++;
+      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'hard'&& jogo.questionGuard == perguntas[id].question){
+        jogo.pontuacao = jogo.pontuacao - 10;
         valor = -10;
         jogo.erros++;
       }
@@ -195,7 +233,11 @@ const respondePergunta = () =>{
   }
 
   const colocarPerguntaAleatoria = () => {
+    elementos.guardaPergunta.style.display = 'none';
     elementos.retornaPergunta.style.display = 'none';
+    if(jogo.perguntaGuardada == undefined){
+      elementos.guardaPergunta.style.display = 'flex';
+    }
     elementos.proximaPergunta.style.display = 'none';
     elementos.submetePergunta.style.display = 'flex';
     
@@ -230,6 +272,7 @@ const respondePergunta = () =>{
             
           }
 
+          //elementos.retornaPergunta.addEventListener('click', () => responderPerguntaGuardada());
           //elementos.guardarPergunta.addEventListener('click', () => guardarPergunta());
           //elementos.submetePergunta.addEventListener('click', () => checarPergunta());         
 
@@ -244,6 +287,36 @@ const respondePergunta = () =>{
   }
 
   const responderPerguntaGuardada = () =>{
+      
+    elementos.guardaPergunta.style.display = 'none';
+    elementos.retornaPergunta.style.display = 'none';
+    elementos.proximaPergunta.style.display = 'none';
+    elementos.divPontuacao.style.display = 'none';
+    elementos.submetePergunta.style.display = 'flex';
+    //console.log(jogo.perguntaGuardada.type);
+    elementos.divPergunta.innerHTML = `<div>${jogo.perguntaGuardada.question}</div>`
+    elementos.divRespostas.innerHTML = ' ';
+    let vetPergGuar = jogo.perguntaGuardada.incorrect_answers;
+    //vetPergGuar.push(jogo.perguntaGuardada.correct_answer);
+    console.log(vetPergGuar);
+    //vetPergGuar =  vetPergGuar.sort(() => Math.random() - 0.5)
+    possibilidades = vetPergGuar;
+    perguntas[id]=jogo.perguntaGuardada;
+
+    for (let j = 0; j < vetPergGuar.length; j++) {
+      if(j==0){
+        elementos.divRespostas.innerHTML += `<div><input type="radio" name="respostas"  value="${vetPergGuar[j]}" checked/>${vetPergGuar[j]}<br/></div>`
+      }else{
+        elementos.divRespostas.innerHTML += `<div><input type="radio" name="respostas"  value="${vetPergGuar[j]}"/>${vetPergGuar[j]}<br/></div>`
+      }
+      
+    }
+    jogo.questionGuard = jogo.perguntaGuardada.question;
+    jogo.perguntaGuardada = undefined;
+    console.log(jogo.perguntaGuardada);
+    //elementos.submetePergunta.addEventListener('click', () => respondePergunta());
+
+
 
   }
 
