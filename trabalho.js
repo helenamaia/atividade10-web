@@ -44,7 +44,7 @@ const pegarCategorias = () => {
 //https://opentdb.com/api.php?amount=1&category=21&difficulty=hard
 
 const pegarPerguntas = () => {
-    axios.get(`${urlBase}/api.php?amount=10&category=${jogo.categoria.id}&difficulty=${jogo.dificuldade}`)
+    axios.get(`${urlBase}/api.php?amount=1&category=${jogo.categoria.id}&difficulty=${jogo.dificuldade}`)
       .then(response => {
           
           const auxP = response.data.results;
@@ -99,11 +99,11 @@ const pegarPerguntas = () => {
   }
 
   const guardarPergunta = () => {
-    jogo.perguntaGuardada = perguntas[id];
+    jogo.perguntaGuardada = perguntas;
     console.log(jogo.perguntaGuardada);
 
     elementos.guardaPergunta.style.display = 'none';
-    colocarPerguntaAleatoria();
+    pegarPerguntas();
   }
 
   const gerarListaPerguntas = () =>{
@@ -141,52 +141,52 @@ const pegarPerguntas = () => {
     let valor;
 
 
-      if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard != perguntas[id].question){
+      if(radiobutton == perguntas[0].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard != perguntas[0].question){
          jogo.pontuacao = jogo.pontuacao + 5;
          valor = 5;
          jogo.acertos++;
-      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard != perguntas[id].question){
+      }else if(radiobutton == perguntas[0].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard != perguntas[0].question){
          jogo.pontuacao = jogo.pontuacao + 8;
          valor = 8;
          jogo.acertos++;
-      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'hard' && jogo.questionGuard != perguntas[id].question){
+      }else if(radiobutton == perguntas[0].correct_answer && jogo.dificuldade == 'hard' && jogo.questionGuard != perguntas[0].question){
         jogo.pontuacao = jogo.pontuacao + 10;
         valor = 10;
         jogo.acertos++;
-      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard != perguntas[id].question){
+      }else if(radiobutton != perguntas[0].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard != perguntas[0].question){
         jogo.pontuacao = jogo.pontuacao - 5;
         valor = -5;
         jogo.erros++;
-      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard != perguntas[id].question){
+      }else if(radiobutton != perguntas[0].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard != perguntas[0].question){
         jogo.pontuacao = jogo.pontuacao - 8;
         valor = -8;
         jogo.erros++;
-      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'hard' && jogo.questionGuard != perguntas[id].question){
+      }else if(radiobutton != perguntas[0].correct_answer && jogo.dificuldade == 'hard' && jogo.questionGuard != perguntas[0].question){
         jogo.pontuacao = jogo.pontuacao - 10;
         valor = -10;
         jogo.erros++;
         console.log(`erros: ${jogo.erros}`);
-      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard == perguntas[id].question){
+      }else if(radiobutton == perguntas[0].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard == perguntas[0].question){
         jogo.pontuacao = jogo.pontuacao + 3;
         valor = +3;
         jogo.acertos++;
-      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard == perguntas[id].question){
+      }else if(radiobutton == perguntas[0].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard == perguntas[0].question){
         jogo.pontuacao = jogo.pontuacao + 6;
         valor = +6;
         jogo.acertos++;
-      }else if(radiobutton == perguntas[id].correct_answer && jogo.dificuldade == 'hard' && jogo.questionGuard == perguntas[id].question){
+      }else if(radiobutton == perguntas[0].correct_answer && jogo.dificuldade == 'hard' && jogo.questionGuard == perguntas[0].question){
         jogo.pontuacao = jogo.pontuacao + 8;
         valor = +8;
         jogo.acertos++;
-      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard == perguntas[id].question){
+      }else if(radiobutton != perguntas[0].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard == perguntas[0].question){
         jogo.pontuacao = jogo.pontuacao - 5;
         valor = -5;
         jogo.erros++;
-      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard == perguntas[id].question){
+      }else if(radiobutton != perguntas[0].correct_answer && jogo.dificuldade == 'medium' && jogo.questionGuard == perguntas[0].question){
         jogo.pontuacao = jogo.pontuacao - 8;
         valor = -8;
         jogo.erros++;
-      }else if(radiobutton != perguntas[id].correct_answer && jogo.dificuldade == 'hard'&& jogo.questionGuard == perguntas[id].question){
+      }else if(radiobutton != perguntas[0].correct_answer && jogo.dificuldade == 'hard'&& jogo.questionGuard == perguntas[0].question){
         jogo.pontuacao = jogo.pontuacao - 10;
         valor = -10;
         jogo.erros++;
@@ -207,21 +207,20 @@ const pegarPerguntas = () => {
     
 
    
-    const i = Math.floor(Math.random() * perguntas.length);
-    const p = perguntas[i];  
+   
     
-    console.log(perguntas);   
+    console.log(perguntas[0].question);   
     
    
       //if(vddFal == true){
        // colocarPerguntaAleatoria();
        if(jogo.vezesJogadas <10){
-            id = i;
-            elementos.divPergunta.innerHTML = `<div>${perguntas[i].question}</div>`
+            //id = i;
+            elementos.divPergunta.innerHTML = `<div>${perguntas[0].question}</div>`
             elementos.divRespostas.innerHTML = ' ';
-            possibilidades = perguntas[id].incorrect_answers;
+            possibilidades = perguntas[0].incorrect_answers;
             
-            possibilidades.push(perguntas[id].correct_answer);
+            possibilidades.push(perguntas[0].correct_answer);
             
             possibilidades =  possibilidades.sort(() => Math.random() - 0.5)
             console.log(`respostas: ${possibilidades}`);
@@ -257,7 +256,7 @@ const pegarPerguntas = () => {
     console.log(vetPergGuar);
     //vetPergGuar =  vetPergGuar.sort(() => Math.random() - 0.5)
     possibilidades = vetPergGuar;
-    perguntas[id]=jogo.perguntaGuardada;
+    perguntas=jogo.perguntaGuardada;
 
     for (let j = 0; j < vetPergGuar.length; j++) {
       if(j==0){
@@ -287,11 +286,11 @@ const pegarPerguntas = () => {
       elementos.guardaPergunta.style.display = 'none';
       elementos.divRespostas.innerHTML = '';
       for (let j = 0; j < possibilidades.length; j++) {
-        if(possibilidades[j]==perguntas[id].correct_answer && perguntas[id].correct_answer == radiobutton){
+        if(possibilidades[j]==perguntas[0].correct_answer && perguntas[0].correct_answer == radiobutton){
           elementos.divRespostas.innerHTML += `<div class="p-3 mb-2 bg-success text-white"><input  type="radio" name="respostas"  value="${possibilidades[j]}" checked/>${possibilidades[j]}<br/></div>`
-        }else if(possibilidades[j]==perguntas[id].correct_answer  && perguntas[id].correct_answer != radiobutton ){
+        }else if(possibilidades[j]==perguntas[0].correct_answer  && perguntas[0].correct_answer != radiobutton ){
           elementos.divRespostas.innerHTML += `<div class="p-3 mb-2 bg-success text-white"><input  type="radio" name="respostas"  value="${possibilidades[j]}"/>${possibilidades[j]}<br/></div>`
-        }else if(possibilidades[j]!=perguntas[id].correct_answer  && possibilidades[j] == radiobutton ){
+        }else if(possibilidades[j]!=perguntas[0].correct_answer  && possibilidades[j] == radiobutton ){
           elementos.divRespostas.innerHTML += `<div class="p-3 mb-2 bg-danger text-white"><input  type="radio" name="respostas"  value="${possibilidades[j]}" checked/>${possibilidades[j]}<br/></div>`
         }else{
           elementos.divRespostas.innerHTML += `<div class="p-3 mb-2 bg-danger text-white"><input type="radio" name="respostas"  value="${possibilidades[j]}"/>${possibilidades[j]}<br/></div>`
@@ -318,8 +317,8 @@ const pegarPerguntas = () => {
       if(jogo.erros >= 3){
         telaFinalizacao();
       }
-      perguntas.splice(id, 1);
-      elementos.proximaPergunta.addEventListener('click', () => colocarPerguntaAleatoria());
+    
+      elementos.proximaPergunta.addEventListener('click', () => pegarPerguntas());
     
   }
   
