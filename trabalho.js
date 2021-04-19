@@ -2,7 +2,6 @@ const urlBase = 'https://opentdb.com';
 const proxy = 'https://cors-anywhere.herokuapp.com/';
 let categorias; 
 let perguntas; 
-let id;
 let possibilidades;
 const elementos = {
     categoriaSelect: document.querySelector('#categoria-pergunta'), 
@@ -30,7 +29,7 @@ const pegarCategorias = () => {
           const aux = response.data.trivia_categories;
           const aux1 = JSON.stringify(aux);
           categorias = JSON.parse(aux1);
-          console.log(categorias);
+          
           for (let i = 0; i < categorias.length; i++) {
               colocarCategorias(categorias[i].name);
               if(i===(parseInt(categorias.length)-1)){
@@ -40,8 +39,6 @@ const pegarCategorias = () => {
     });
 };
 
-//https://opentdb.com/api.php?amount=10&category=19&difficulty=easy
-//https://opentdb.com/api.php?amount=1&category=21&difficulty=hard
 
 const pegarPerguntas = () => {
     axios.get(`${urlBase}/api.php?amount=1&category=${jogo.categoria.id}&difficulty=${jogo.dificuldade}`)
@@ -50,11 +47,8 @@ const pegarPerguntas = () => {
           const auxP = response.data.results;
           const aux1P = JSON.stringify(auxP);
           perguntas = JSON.parse(aux1P);
-          console.log(perguntas);
           colocarPerguntaAleatoria();
-          elementos.submetePergunta.addEventListener('click', () => respondePergunta());
-          elementos.guardaPergunta.addEventListener('click', () => guardarPergunta());
-
+          
     });
 }
 
@@ -93,14 +87,14 @@ const pegarPerguntas = () => {
     elementos.telaJogo.style.display = 'none'; 
     elementos.telaFinal.style.display = 'none';
 
-    elementos.jogar.addEventListener('click', () => gerarListaPerguntas());
+   
     
 
   }
 
   const guardarPergunta = () => {
-    jogo.perguntaGuardada = perguntas;
-    console.log(jogo.perguntaGuardada);
+    jogo.perguntaGuardada = perguntas[0];
+   
 
     elementos.guardaPergunta.style.display = 'none';
     pegarPerguntas();
@@ -165,7 +159,6 @@ const pegarPerguntas = () => {
         jogo.pontuacao = jogo.pontuacao - 10;
         valor = -10;
         jogo.erros++;
-        console.log(`erros: ${jogo.erros}`);
       }else if(radiobutton == perguntas[0].correct_answer && jogo.dificuldade == 'easy' && jogo.questionGuard == perguntas[0].question){
         jogo.pontuacao = jogo.pontuacao + 3;
         valor = +3;
@@ -206,16 +199,11 @@ const pegarPerguntas = () => {
     elementos.submetePergunta.style.display = 'flex';
     
 
-   
-   
     
-    console.log(perguntas[0].question);   
-    
+
    
-      //if(vddFal == true){
-       // colocarPerguntaAleatoria();
        if(jogo.vezesJogadas <10){
-            //id = i;
+           
             elementos.divPergunta.innerHTML = `<div>${perguntas[0].question}</div>`
             elementos.divRespostas.innerHTML = ' ';
             possibilidades = perguntas[0].incorrect_answers;
@@ -223,7 +211,7 @@ const pegarPerguntas = () => {
             possibilidades.push(perguntas[0].correct_answer);
             
             possibilidades =  possibilidades.sort(() => Math.random() - 0.5)
-            console.log(`respostas: ${possibilidades}`);
+            
 
             for (let j = 0; j < possibilidades.length; j++) {
               if(j==0){
@@ -248,15 +236,15 @@ const pegarPerguntas = () => {
     elementos.proximaPergunta.style.display = 'none';
     elementos.divPontuacao.style.display = 'none';
     elementos.submetePergunta.style.display = 'flex';
-    //console.log(jogo.perguntaGuardada.type);
+    
     elementos.divPergunta.innerHTML = `<div>${jogo.perguntaGuardada.question}</div>`
     elementos.divRespostas.innerHTML = ' ';
     let vetPergGuar = jogo.perguntaGuardada.incorrect_answers;
-    //vetPergGuar.push(jogo.perguntaGuardada.correct_answer);
-    console.log(vetPergGuar);
-    //vetPergGuar =  vetPergGuar.sort(() => Math.random() - 0.5)
+   
+    
+   
     possibilidades = vetPergGuar;
-    perguntas=jogo.perguntaGuardada;
+    perguntas[0]=jogo.perguntaGuardada;
 
     for (let j = 0; j < vetPergGuar.length; j++) {
       if(j==0){
@@ -268,7 +256,7 @@ const pegarPerguntas = () => {
     }
     jogo.questionGuard = jogo.perguntaGuardada.question;
     jogo.perguntaGuardada = undefined;
-    console.log(jogo.perguntaGuardada);
+   
 
 
 
@@ -300,10 +288,10 @@ const pegarPerguntas = () => {
       
       if(jogo.perguntaGuardada != undefined){
         elementos.retornaPergunta.style.display = 'flex';
-        elementos.retornaPergunta.addEventListener('click', () => responderPerguntaGuardada());
+       
       }
   
-      //console.log(jogo.pontuacao);
+      
       elementos.submetePergunta.style.display = 'none';
       elementos.proximaPergunta.style.display = 'flex';
       elementos.divPontuacao.style.display = 'flex';
@@ -311,15 +299,14 @@ const pegarPerguntas = () => {
       const pontos = calculaPontuacao(radiobutton);
       jogo.vezesJogadas++;
       
-      //console.log(jogo.pontuacao);
+     
       elementos.divPontuacao.innerHTML = `<div class="p-3 mb-2 bg-light text-dark"><strong>Pontuação computada:${pontos} Pontuação total: ${jogo.pontuacao}<strong></div>`
       
       if(jogo.erros >= 3){
         telaFinalizacao();
       }
     
-      elementos.proximaPergunta.addEventListener('click', () => pegarPerguntas());
-    
+     
   }
   
   const telaFinalizacao = () =>{
@@ -337,6 +324,10 @@ const pegarPerguntas = () => {
     <div><Strong>Categoria:</strong>${jogo.categoria.name}</div>`;
       
   }
-
-
+  elementos.submetePergunta.addEventListener('click', () => respondePergunta());
+  elementos.guardaPergunta.addEventListener('click', () => guardarPergunta());
+  elementos.jogar.addEventListener('click', () => gerarListaPerguntas());
+  elementos.retornaPergunta.addEventListener('click', () => responderPerguntaGuardada());
+  elementos.proximaPergunta.addEventListener('click', () => pegarPerguntas());
+    
   novoJogo();
